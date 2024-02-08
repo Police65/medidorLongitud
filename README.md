@@ -1,16 +1,26 @@
-# flutter_application_2
+# Unit Conversion App
 
-A new Flutter project.
+Esta es una aplicación de conversión de unidades construida con Flutter. Permite convertir entre metros, centímetros, pies y pulgadas (por ahora).
 
-## Getting Started
+## Características
 
-This project is a starting point for a Flutter application.
+- Convierte entre metros, centímetros, pies e pulgadas.
+- Cambia entre modo claro y oscuro.
+- Mejora la legibilidad del usuario al cambiar el color del texto a blanco en modo oscuro.
 
-A few resources to get you started if this is your first Flutter project:
+## Cómo usar
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. Selecciona la unidad de medida de origen.
+2. Selecciona la unidad de medida de destino.
+3. Ingresa el valor que deseas convertir.
+4. Haz clic en "Convertir" para ver el resultado.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Versión
+
+1.1.0
+
+## Notas de la versión 1.1.0
+
+- Se agregó la funcionalidad de cambiar el color del texto a blanco en modo oscuro para mejorar la legibilidad.
+- Se corrigieron errores relacionados con la seguridad de los nulos en Dart.
+- Se mejoró la lógica de conversión para soportar todas las combinaciones de unidades de medida.
