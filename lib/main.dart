@@ -23,7 +23,7 @@ class ConversionPage extends StatefulWidget {
 }
 
 class _ConversionPageState extends State<ConversionPage> {
-  double _inputValue = 0.0;
+  String _inputValue = "";
   bool _isDarkMode = false;
   String _result = "";
   String _startUnit = "Metros";
@@ -31,20 +31,21 @@ class _ConversionPageState extends State<ConversionPage> {
 
   void _convert() {
     setState(() {
+      double inputValue = double.tryParse(_inputValue) ?? 0.0;
       double meters = 0.0;
 
       switch (_startUnit) {
         case 'Metros':
-          meters = _inputValue;
+          meters = inputValue;
           break;
         case 'Centimetros':
-          meters = ConversionHelper.centimetersToMeters(_inputValue);
+          meters = ConversionHelper.centimetersToMeters(inputValue);
           break;
         case 'Pies':
-          meters = ConversionHelper.feetToMeters(_inputValue);
+          meters = ConversionHelper.feetToMeters(inputValue);
           break;
         case 'Pulgadas':
-          meters = ConversionHelper.inchesToMeters(_inputValue);
+          meters = ConversionHelper.inchesToMeters(inputValue);
           break;
       }
 
@@ -71,6 +72,26 @@ class _ConversionPageState extends State<ConversionPage> {
     });
   }
 
+  void _appendDigit(String digit) {
+    setState(() {
+      _inputValue += digit;
+    });
+  }
+
+  void _deleteDigit() {
+    setState(() {
+      _inputValue = _inputValue.isNotEmpty
+          ? _inputValue.substring(0, _inputValue.length - 1)
+          : "";
+    });
+  }
+
+  void _clearAll() {
+    setState(() {
+      _inputValue = "";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,86 +106,137 @@ class _ConversionPageState extends State<ConversionPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: _isDarkMode ? Color(0xFF202225) : Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: _isDarkMode ? Color(0xFF37393f) : Color(0xFF37393f),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 6,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    _inputValue,
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: _isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _convert,
+                    child: Text('Convertir'),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    _result,
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: _isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  DropdownButton<String>(
+                    value: _startUnit,
+                    style: TextStyle(
+                        color: _isDarkMode ? Colors.white : Colors.black),
+                    items: <String>['Metros', 'Centimetros', 'Pies', 'Pulgadas']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _startUnit = newValue ?? _startUnit;
+                      });
+                    },
+                  ),
+                  DropdownButton<String>(
+                    value: _convertedUnit,
+                    style: TextStyle(
+                        color: _isDarkMode ? Colors.white : Colors.black),
+                    items: <String>['Metros', 'Centimetros', 'Pies', 'Pulgadas']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _convertedUnit = newValue ?? _convertedUnit;
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: <Widget>[
-              DropdownButton<String>(
-                value: _startUnit,
-                style:
-                    TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
-                items: <String>['Metros', 'Centimetros', 'Pies', 'Pulgadas']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _startUnit = newValue ?? _startUnit;
-                  });
-                },
-              ),
-              DropdownButton<String>(
-                value: _convertedUnit,
-                style:
-                    TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
-                items: <String>['Metros', 'Centimetros', 'Pies', 'Pulgadas']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _convertedUnit = newValue ?? _convertedUnit;
-                  });
-                },
-              ),
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _inputValue = double.tryParse(value) ?? 0.0;
-                  });
-                },
-                style:
-                    TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Ingresa el valor en $_startUnit',
-                  labelStyle: TextStyle(
-                      color: _isDarkMode ? Colors.white : Colors.black),
+          Expanded(
+            flex: 4,
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    _buildButton('1'),
+                    _buildButton('2'),
+                    _buildButton('3'),
+                    _buildButton('C'),
+                  ],
                 ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _convert,
-                child: Text('Convertir'),
-              ),
-              SizedBox(height: 20),
-              Text(
-                _result,
-                style: TextStyle(
-                  fontSize: 24,
-                  color: _isDarkMode ? Colors.white : Colors.black,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    _buildButton('4'),
+                    _buildButton('5'),
+                    _buildButton('6'),
+                    _buildButton('x'),
+                  ],
                 ),
-              ),
-            ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    _buildButton('7'),
+                    _buildButton('8'),
+                    _buildButton('9'),
+                    _buildButton('='),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    _buildButton('0'),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildButton(String digit) {
+    return ElevatedButton(
+      onPressed: () {
+        if (digit == 'C') {
+          _clearAll();
+          //Si antes de las 12 de la noche encuentro los iconos le pongo los iconos y no esos caracteres
+        } else if (digit == 'x') {
+          _deleteDigit();
+        } else if (digit == '=') {
+          _convert();
+
+          //Estoy entregando la tarea con datos moviles pq hay una falla masiva en PSN
+
+          //Tardara en suvirse el malparido comit, pipipi
+        } else {
+          _appendDigit(digit);
+        }
+      },
+      child: Text(digit),
     );
   }
 }
